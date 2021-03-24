@@ -1,4 +1,4 @@
-import os, argparse, time, stat, pwd, grp
+import os, argparse, time, stat, pwd, grp, glob
 from tabulate import tabulate
 from pwd import getpwuid
 from stat import *
@@ -32,11 +32,12 @@ def time_sort(long_format_list):
 
 def long_format():
     long_format_list=[]
-    files_list=os.listdir()
+    if args.R:
+        files_list=glob.glob('**',recursive = True)
+    else:
+        files_list=os.listdir()
     for filename in files_list:
-        print(filename)
         if filename.startswith(".") and not args.a:
-            print(filename)
             continue
         
         file_info=[]
@@ -80,12 +81,13 @@ def tabular_display(display_list, header):
     print(tabulate(display_list, headers=header))
 
 parser=argparse.ArgumentParser(description="List file in directory from specified path")
-parser.add_argument('-l', action='store_true', help='Display in long format')
+parser.add_argument('-l', action='store_true', help='Displays files in long format')
 parser.add_argument('-s', action='store_true', help='Sort files by size')
 parser.add_argument('-t', action='store_true', help='Sort by time modified')
 parser.add_argument('-u', action='store_true', help='Use time of last access')
 parser.add_argument('-U', action='store_true', help='Use time of file creation')
 parser.add_argument('-a', action='store_true', help='Include directory entries whose names begin with a dot \'.\'')
+parser.add_argument('-R', action='store_true', help='Recursively search for files inside the current directory')
 
 args=parser.parse_args()
 
@@ -121,6 +123,11 @@ def main():
         header=["CreationTime","Filename"]
     
     if args.a:
+        if not args.l:
+            display_list=long_format()
+            header=long_header_list
+
+    if args.R:
         if not args.l:
             display_list=long_format()
             header=long_header_list
