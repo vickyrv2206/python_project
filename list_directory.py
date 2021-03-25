@@ -5,7 +5,7 @@ from stat import *
 
 def find_permission(stat_mode):
     mode=''
-    mode_pattern={'1':'--x','2':'-w-','3':'-wx','4':'r--','5':'r-x','6':'rw-','7':'rwx'}
+    mode_pattern={'0':'---','1':'--x','2':'-w-','3':'-wx','4':'r--','5':'r-x','6':'rw-','7':'rwx'}
     for digit in str(stat_mode):
         mode=mode+mode_pattern[digit]
     return mode
@@ -49,10 +49,9 @@ def long_format(filepath):
     long_format_list=[]
     files_list=get_files_list(filepath)
     for filename in files_list:
-
         if filename.split('/')[-1].startswith(".") and not args.a:
             continue
-        
+        # print(filename)
         file_info=[]
         stat = os.stat(filename)
         stat_mode = oct(stat.st_mode)[-3:]
@@ -70,7 +69,6 @@ def long_format(filepath):
         if args.f:
             file_info.append("{}".format(filename))
         else:
-            # file_info.append("{}".format(filename.replace(filepath,"")))
             filename=filename.replace(filepath,"")
             if filename[0]=='/':
                 filename=filename.replace('/',"")
@@ -106,7 +104,7 @@ def get_time(time_type, filepath):
     return access_time_list
 
 def tabular_display(display_list, header):
-    print(tabulate(display_list, headers=header))
+    print(tabulate(display_list, headers=header, tablefmt="plain"))
 
 def list_files(filepath):
     long_header_list=["Mode","Links","Owner","Group","size","ModifiedTime","Filename"]
