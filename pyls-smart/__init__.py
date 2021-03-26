@@ -4,6 +4,8 @@ from pwd import getpwuid
 from stat import *
 
 def get_files_list(filepath):
+    """This function will returns the list of files in the defined path or in current location if no path is defined as a list
+    """
     files_list=[]
     if not args.a:
         for file in os.listdir(filepath) :
@@ -14,6 +16,8 @@ def get_files_list(filepath):
         return os.listdir(filepath)
 
 def find_permission(stat_mode):
+    """This function takes st_mode value from file stat as an argument and returns the file mode in human readable format
+    """
     mode=''
     mode_pattern={'0':'---','1':'--x','2':'-w-','3':'-wx','4':'r--','5':'r-x','6':'rw-','7':'rwx'}
     for digit in str(stat_mode):
@@ -21,12 +25,18 @@ def find_permission(stat_mode):
     return mode
 
 def find_owner(stat_uid):
+    """This function returns the owner of the file
+    """
     return pwd.getpwuid(stat_uid)[0]
 
 def find_group(stat_gid):
+    """This function returns the function of the file
+    """
     return grp.getgrgid(stat_gid)[0]
 
 def find_file_type(filename, filepath):
+    """This function returns 'd' if it a directory and '-' if it is a file or link
+    """
     if os.path.isfile(filepath+'/'+filename):
         return '-'
     elif os.path.isdir(filepath+'/'+filename):
@@ -35,20 +45,28 @@ def find_file_type(filename, filepath):
         return '-'
 
 def size_sort(long_format_list):
+    """This function returns the sorted list of final output based on size of the files
+    """
     size_sorted_list=sorted(long_format_list, key = lambda x:x[4])
     return size_sorted_list
 
 def time_sort(long_format_list, index):
+    """This function returns the sorted list of final output based on modified time of the files
+    """
     time_sorted_list=sorted(long_format_list, key = lambda x:x[index]) 
     for entry in time_sorted_list:
         entry[index]=time.ctime(int(entry[index]))
     return time_sorted_list
 
 def name_sort(long_format_list):
+    """This function returns the sorted list of final output based on name of the files
+    """
     name_sorted_list=sorted(long_format_list, key = lambda x:x[6])
     return name_sorted_list
 
 def long_format(files_list, filepath):
+    """This function process the files list to get the long format output
+    """
     if args.R:
         print('\n{}:'.format(filepath))
     long_format_list=[]
@@ -95,7 +113,8 @@ def long_format(files_list, filepath):
                 long_format(files_list,filepath+'/'+file)
 
 def short_format(files_list, filepath):
-    # print(files_list, filepath)
+    """This function process the files list to get the long format output
+    """
     if args.R and filepath != '.':
         print('{}:'.format(filepath))
     for file in files_list:
@@ -103,26 +122,17 @@ def short_format(files_list, filepath):
     print("\n")
     if args.R:
         for file in files_list:
-            # print("sample")
             if os.path.isdir(filepath+'/'+file):
                 files_list=get_files_list(filepath+'/'+file)
                 short_format(files_list,filepath+'/'+file)
 
 
 def list_directory(filepath):
+    """This function is the second main function which calls long_format() and short_format() based on the arguments
+    """
     if (not args.l and not args.s and not args.t and not args.u and not args.U):
         files_list=get_files_list(filepath)
         short_format(files_list, filepath)
-        # for file in files_list:
-        #     print(file+"\t",end="")
-        # print("\n")
-        # max_len=len(max(files_list, key=len))
-        # print(max_len)
-        # for file in files_list:
-        #     print(file, end =" ")
-        #     for i in range(max_len-len(file)):
-        #         print(i)
-        #         # print(" ",end =" ")
 
 
     if args.l or args.u or args.U:
@@ -130,9 +140,13 @@ def list_directory(filepath):
         long_format(files_list, filepath)
 
 def print_format(print_list):
+    """This function prints the output in a table format
+    """
     print(tabulate(print_list, tablefmt="plain"))
 
 def main():
+    """This is the main function where list_directory is called
+    """
     if not len(args.file_path_list):
         list_directory(".")
     else:
