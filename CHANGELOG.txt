@@ -2,6 +2,22 @@ Change Log
 ==========
 
 
-0.0.1 (25/04/2021)
+0.0.1 (25/03/2021)
 ------------------
 - First release
+
+0.0.2 (26/03/2021)
+------------------
+- Second release
+- Fixed showing "." under default recursion
+
+0.0.3 (26/03/2021)
+------------------
+- Third release
+- Added sorting the files list by default
+
+0.0.4 (26/03/2021)
+------------------
+- Fourth release
+- Added documentation
+- Added github url

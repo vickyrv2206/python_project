@@ -1,4 +1,4 @@
-import os, argparse, time, stat, pwd, grp, glob
+import os, argparse, time, stat, pwd, grp, glob, sys
 from tabulate import tabulate
 from pwd import getpwuid
 from stat import *
@@ -67,7 +67,7 @@ def name_sort(long_format_list):
 def long_format(files_list, filepath):
     """This function process the files list to get the long format output
     """
-    if args.R:
+    if args.R and filepath != '.':
         print('\n{}:'.format(filepath))
     long_format_list=[]
     for filename in files_list:
@@ -117,9 +117,17 @@ def short_format(files_list, filepath):
     """
     if args.R and filepath != '.':
         print('{}:'.format(filepath))
-    for file in files_list:
-        print(file+"\t\t",end="")
-    print("\n")
+    files_list=sorted(files_list)
+    if args.r:
+        files_list.reverse()
+    if sys.stdout.isatty():
+        for file in files_list:
+            print(file+"\t\t",end="")
+        print()
+        # print("\n")
+    elif not sys.stdout.isatty():
+        for file in sorted(files_list):
+            print(file)
     if args.R:
         for file in files_list:
             if os.path.isdir(filepath+'/'+file):
@@ -142,6 +150,8 @@ def list_directory(filepath):
 def print_format(print_list):
     """This function prints the output in a table format
     """
+    if args.r:
+        print_list.reverse()
     print(tabulate(print_list, tablefmt="plain"))
 
 def main():
@@ -163,6 +173,7 @@ parser.add_argument('-u', action='store_true', help='Use time of last access, in
 parser.add_argument('-U', action='store_true', help='Use time of file creation, instead of last modification for sorting (-t) or long output (-l).')
 parser.add_argument('-a', action='store_true', help='Include directory entries whose names begin with a dot \'.\'')
 parser.add_argument('-R', action='store_true', help='Recursively list subdirectories encountered.')
+parser.add_argument('-r', action='store_true', help='sorts in reverse order')
 parser.add_argument('file_path_list', type=str, nargs='*', help='list of file paths')
 
 args=parser.parse_args()
